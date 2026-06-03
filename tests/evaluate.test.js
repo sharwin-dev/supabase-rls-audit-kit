@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { evaluateCatalog, hasHighSeverity } from "../src/checks/evaluate.js";
 import { formatFindings } from "../src/output.js";
 
@@ -89,4 +90,24 @@ test("formats text and json output", () => {
 
   assert.match(formatFindings(findings, "text"), /HIGH: public\.clients/);
   assert.deepEqual(JSON.parse(formatFindings(findings, "json")).findings, findings);
+});
+
+test("json output matches documented finding fields", () => {
+  const schema = JSON.parse(readFileSync(new URL("../schemas/finding.schema.json", import.meta.url), "utf8"));
+  const findings = evaluateCatalog({
+    tables: [{ schema_name: "public", table_name: "clients", rls_enabled: false, policy_count: 0 }],
+    grants: [],
+    functions: [],
+    views: []
+  });
+  const output = JSON.parse(formatFindings(findings, "json"));
+
+  assert.deepEqual(Object.keys(output), ["findings"]);
+  assert.equal(schema.required.includes("findings"), true);
+
+  for (const finding of output.findings) {
+    assert.deepEqual(Object.keys(finding), ["id", "severity", "object", "message", "remediation"]);
+    assert.equal(schema.properties.findings.items.required.every((field) => field in finding), true);
+    assert.equal(schema.properties.findings.items.properties.severity.enum.includes(finding.severity), true);
+  }
 });

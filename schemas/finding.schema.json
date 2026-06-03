@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sharwin-dev/supabase-rls-audit-kit/schemas/finding.schema.json",
+  "title": "supabase-rls-audit-kit finding output",
+  "type": "object",
+  "required": ["findings"],
+  "additionalProperties": false,
+  "properties": {
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "object", "message", "remediation"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Stable check identifier."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["HIGH", "MEDIUM", "WARN"],
+            "description": "Risk level used for CI gating and reporting."
+          },
+          "object": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Database object name, usually schema-qualified."
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable finding summary."
+          },
+          "remediation": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable fix guidance."
+          }
+        }
+      }
+    }
+  }
+}
