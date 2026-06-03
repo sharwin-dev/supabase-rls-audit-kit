@@ -1,0 +1,28 @@
+{
+  "name": "supabase-rls-audit-kit",
+  "version": "0.1.0",
+  "description": "CLI checks for common Supabase/Postgres RLS security footguns.",
+  "type": "module",
+  "bin": {
+    "rls-audit": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "lint": "node --check src/*.js src/checks/*.js tests/*.test.js"
+  },
+  "keywords": [
+    "supabase",
+    "postgres",
+    "rls",
+    "security",
+    "audit"
+  ],
+  "author": "Sharwin Harkal",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.13.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
