@@ -40,6 +40,8 @@ rls-audit --database-url "$DATABASE_URL" --format json
 
 The JSON contract is documented in [`docs/json-output.md`](docs/json-output.md), with a schema at [`schemas/finding.schema.json`](schemas/finding.schema.json).
 
+GitHub Actions usage is documented in [`docs/github-actions.md`](docs/github-actions.md), with a workflow example at [`examples/github-action/rls-audit.yml`](examples/github-action/rls-audit.yml).
+
 ## Safety
 
 The CLI runs read-only catalog queries. It does not mutate the database.
