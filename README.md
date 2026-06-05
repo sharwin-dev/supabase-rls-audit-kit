@@ -42,6 +42,8 @@ The JSON contract is documented in [`docs/json-output.md`](docs/json-output.md),
 
 GitHub Actions usage is documented in [`docs/github-actions.md`](docs/github-actions.md), with a workflow example at [`examples/github-action/rls-audit.yml`](examples/github-action/rls-audit.yml).
 
+Supabase CLI local usage is documented in [`docs/supabase-cli-local.md`](docs/supabase-cli-local.md), with a local example at [`examples/supabase-local`](examples/supabase-local).
+
 ## Safety
 
 The CLI runs read-only catalog queries. It does not mutate the database.
