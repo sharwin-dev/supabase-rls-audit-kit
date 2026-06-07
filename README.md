@@ -44,6 +44,8 @@ GitHub Actions usage is documented in [`docs/github-actions.md`](docs/github-act
 
 Supabase CLI local usage is documented in [`docs/supabase-cli-local.md`](docs/supabase-cli-local.md), with a local example at [`examples/supabase-local`](examples/supabase-local).
 
+Tenant-isolation fixtures are documented in [`docs/tenant-isolation-fixtures.md`](docs/tenant-isolation-fixtures.md).
+
 ## Safety
 
 The CLI runs read-only catalog queries. It does not mutate the database.

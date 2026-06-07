@@ -1,0 +1,24 @@
+{
+  "fixtures": [
+    {
+      "file": "good-owner-isolation.sql",
+      "classification": "good",
+      "purpose": "Owner-scoped SELECT, INSERT, UPDATE, and DELETE policies."
+    },
+    {
+      "file": "bad-cross-tenant-select.sql",
+      "classification": "bad",
+      "purpose": "SELECT policy uses true and exposes every tenant row."
+    },
+    {
+      "file": "bad-unscoped-insert.sql",
+      "classification": "bad",
+      "purpose": "INSERT policy accepts rows for any owner."
+    },
+    {
+      "file": "bad-user-metadata-tenant.sql",
+      "classification": "bad",
+      "purpose": "Tenant authorization trusts user-editable JWT metadata."
+    }
+  ]
+}
