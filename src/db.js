@@ -22,6 +22,7 @@ export function emptyCatalog() {
     tables: [],
     grants: [],
     functions: [],
-    views: []
+    views: [],
+    storage_policies: []
   };
 }

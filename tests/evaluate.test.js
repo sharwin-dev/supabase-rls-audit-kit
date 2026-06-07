@@ -79,6 +79,52 @@ test("flags non-security-invoker views", () => {
   assert.equal(findings[0].severity, "WARN");
 });
 
+test("flags broad storage policies for client roles", () => {
+  const findings = evaluateCatalog({
+    storage_policies: [{
+      policy_name: "anyone can upload",
+      cmd: "INSERT",
+      roles: ["anon"],
+      broad_using: false,
+      broad_with_check: true
+    }]
+  });
+
+  assert.equal(findings[0].id, "storage-policy-broad-client-access");
+  assert.equal(findings[0].severity, "HIGH");
+  assert.match(findings[0].message, /anon/);
+});
+
+test("flags authenticated storage upload policies without upsert coverage", () => {
+  const findings = evaluateCatalog({
+    storage_policies: [{
+      policy_name: "authenticated uploads",
+      cmd: "INSERT",
+      roles: ["authenticated"],
+      broad_using: false,
+      broad_with_check: false
+    }]
+  });
+
+  assert.equal(findings[0].id, "storage-upsert-policy-incomplete");
+  assert.equal(findings[0].severity, "WARN");
+  assert.match(findings[0].message, /SELECT, UPDATE/);
+});
+
+test("accepts complete scoped authenticated storage upsert policies", () => {
+  const findings = evaluateCatalog({
+    storage_policies: ["SELECT", "INSERT", "UPDATE"].map((cmd) => ({
+      policy_name: `scoped ${cmd.toLowerCase()}`,
+      cmd,
+      roles: ["authenticated"],
+      broad_using: false,
+      broad_with_check: false
+    }))
+  });
+
+  assert.deepEqual(findings, []);
+});
+
 test("formats text and json output", () => {
   const findings = [{
     id: "table-rls-disabled",

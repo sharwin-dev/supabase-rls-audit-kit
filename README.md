@@ -13,6 +13,7 @@ This project is for indie SaaS builders and maintainers who want a repeatable wa
 - `SECURITY DEFINER` functions in exposed schemas.
 - Functions executable by `anon` or `authenticated`.
 - Views in exposed schemas that may bypass RLS.
+- Broad Storage policies and incomplete authenticated upsert policy coverage.
 
 ## Install
 
@@ -45,6 +46,8 @@ GitHub Actions usage is documented in [`docs/github-actions.md`](docs/github-act
 Supabase CLI local usage is documented in [`docs/supabase-cli-local.md`](docs/supabase-cli-local.md), with a local example at [`examples/supabase-local`](examples/supabase-local).
 
 Tenant-isolation fixtures are documented in [`docs/tenant-isolation-fixtures.md`](docs/tenant-isolation-fixtures.md).
+
+Storage policy checks are documented in [`docs/storage-policy-checks.md`](docs/storage-policy-checks.md).
 
 ## Safety
 

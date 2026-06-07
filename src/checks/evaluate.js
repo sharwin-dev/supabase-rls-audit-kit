@@ -88,6 +88,8 @@ export function evaluateCatalog(catalog) {
     }
   }
 
+  evaluateStoragePolicies(catalog.storage_policies ?? [], findings);
+
   return findings.sort((a, b) => severityRank(a.severity) - severityRank(b.severity));
 }
 
@@ -97,4 +99,49 @@ export function hasHighSeverity(findings) {
 
 function severityRank(severity) {
   return { HIGH: 0, MEDIUM: 1, WARN: 2 }[severity] ?? 3;
+}
+
+function evaluateStoragePolicies(policies, findings) {
+  const authenticatedCommands = new Set();
+
+  for (const policy of policies) {
+    const roles = policy.roles ?? [];
+    const clientRoles = roles.filter((role) => ["public", "anon", "authenticated"].includes(role));
+    const command = policy.cmd?.toUpperCase();
+
+    if (roles.includes("authenticated")) {
+      authenticatedCommands.add(command);
+    }
+
+    if (command === "ALL" && roles.includes("authenticated")) {
+      authenticatedCommands.add("SELECT");
+      authenticatedCommands.add("INSERT");
+      authenticatedCommands.add("UPDATE");
+      authenticatedCommands.add("DELETE");
+    }
+
+    if (clientRoles.length > 0 && (policy.broad_using || policy.broad_with_check)) {
+      findings.push({
+        id: "storage-policy-broad-client-access",
+        severity: clientRoles.includes("anon") || clientRoles.includes("public") ? "HIGH" : "MEDIUM",
+        object: `storage.objects policy ${policy.policy_name}`,
+        message: `Storage policy grants broad ${command} access to client role(s): ${clientRoles.join(", ")}.`,
+        remediation: "Restrict the policy by bucket_id, object owner, tenant, or a similarly explicit access boundary."
+      });
+    }
+  }
+
+  if (
+    authenticatedCommands.has("INSERT")
+    && (!authenticatedCommands.has("SELECT") || !authenticatedCommands.has("UPDATE"))
+  ) {
+    const missing = ["SELECT", "UPDATE"].filter((command) => !authenticatedCommands.has(command));
+    findings.push({
+      id: "storage-upsert-policy-incomplete",
+      severity: "WARN",
+      object: "storage.objects",
+      message: `Authenticated uploads are allowed, but Storage upsert policy coverage is missing: ${missing.join(", ")}.`,
+      remediation: "If authenticated clients use upsert, add appropriately scoped SELECT and UPDATE policies in addition to INSERT."
+    });
+  }
 }

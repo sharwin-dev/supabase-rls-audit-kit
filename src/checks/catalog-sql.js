@@ -63,6 +63,18 @@ views as (
   join pg_namespace n on n.oid = c.relnamespace
   join exposed_schemas es on es.schema_name = n.nspname
   where c.relkind = 'v'
+),
+storage_policies as (
+  select
+    policyname as policy_name,
+    cmd,
+    roles,
+    permissive,
+    trim(coalesce(qual, '')) in ('true', '(true)') as broad_using,
+    trim(coalesce(with_check, '')) in ('true', '(true)') as broad_with_check
+  from pg_policies
+  where schemaname = 'storage'
+    and tablename = 'objects'
 )
 select jsonb_build_object(
   'tables', coalesce((select jsonb_agg(to_jsonb(t) || jsonb_build_object(
@@ -71,6 +83,7 @@ select jsonb_build_object(
   )) from tables t left join policies p using (schema_name, table_name)), '[]'::jsonb),
   'grants', coalesce((select jsonb_agg(to_jsonb(g)) from grants g), '[]'::jsonb),
   'functions', coalesce((select jsonb_agg(to_jsonb(f)) from functions f), '[]'::jsonb),
-  'views', coalesce((select jsonb_agg(to_jsonb(v)) from views v), '[]'::jsonb)
+  'views', coalesce((select jsonb_agg(to_jsonb(v)) from views v), '[]'::jsonb),
+  'storage_policies', coalesce((select jsonb_agg(to_jsonb(sp)) from storage_policies sp), '[]'::jsonb)
 ) as audit_catalog;
 `;
